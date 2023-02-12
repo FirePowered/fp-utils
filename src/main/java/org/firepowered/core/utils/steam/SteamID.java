@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.firepowered.core.utils.StringUtils;
-import org.firepowered.core.utils.net.SteamApiWrapper;
 
 /**
  * Representation of a SteamID. Static methods exist for creating an instance
@@ -113,21 +112,19 @@ public final class SteamID {
      * This method will not attempt to resolve a vanity url, returning {@code null}
      * if such a string is given.
      *
-     * @param str The string representing the SteamID.
+     * @param str The string representing the SteamID, must not be {@code null}
      * @return A SteamID object, or {@code null} if one could not be determined.
      * @throws SteamIDParserException If the {@link SteamIDType type} of SteamID
      *                                could not be determined
-     * @since 1.0
      */
     public static SteamID of(final String str) throws SteamIDParserException {
         try {
             return of(str, null);
         } catch (IOException | InterruptedException e) {
-            // This call wasn't expecting to resolve a vanity url, so consider it a nop if
-            // there is an error as these are only thrown by the Http request
-            // $FALL-THROUGH$
+            // These exceptions are only thrown by performing an HTTP request to resolve a
+            // custom URL, which this method doesn't call.
+            throw new AssertionError();
         }
-        return null;
     }
 
     /**
@@ -135,20 +132,20 @@ public final class SteamID {
      * This method will also attempt to resolve a vanity url if the type can't be
      * determined otherwise.
      * 
-     * @param str The string to convert
+     * @param str The string representing the SteamID, must not be {@code null} or
+     *            empty
      * @param api API key for custom url resolution
-     * @return The SteamID
+     * @return A SteamID object, or {@code null} if one could not be determined.
      * @throws SteamIDParserException If the SteamID type was unable to be
      *                                determined or the calculated SteamID was
      *                                invalid
      * @throws IOException            If an error occurred while resolving the
      *                                custom url
      * @throws InterruptedException   If the http request is interrupted
-     * @since 1.0
      */
     public static SteamID of(final String str, final String api)
             throws SteamIDParserException, IOException, InterruptedException {
-        assert str != null : "str cannot be null";
+        assert !StringUtils.isEmpty(str) : "str cannot be null or empty";
 
         String idStr = str.strip();
         SteamID ret = null;
@@ -166,13 +163,8 @@ public final class SteamID {
             ret = ofProfiles(idStr);
         } else {
             if (!StringUtils.isEmpty(api)) {
-                if (idStr.matches(PATTERNSTR_URL)) {
-                    // Custom URL (/id/my_custom_url)
-                    ret = ofCustom(idStr, api);
-                } else {
-                    // Try a custom id without url
-                    ret = ofCustom(idStr, api);
-                }
+                // Try a custom id
+                ret = ofCustom(idStr, api);
             }
         }
 
@@ -191,7 +183,7 @@ public final class SteamID {
         return of64(matcher.group(1));
     }
 
-    private static SteamID ofCustom(final String api, final String str)
+    private static SteamID ofCustom(final String str, final String api)
             throws SteamIDParserException, IOException, InterruptedException {
         Matcher matcher = PATTERN_URL.matcher(str);
         String query = str;
@@ -241,15 +233,13 @@ public final class SteamID {
 
     @Override
     public String toString() {
-        return String.format("steamID64: %s\nsteamID32: %s\nsteam3ID: %s", getSteamID64(), getSteamID32(false),
-                getSteam3ID());
+        return getSteamID64();
     }
 
     /**
      * Gets the SteamID64 (7656119...) representation of the current SteamID.
      *
      * @return The SteamID64
-     * @since 1.0
      */
     public String getSteamID64() {
         long ret = (universe << 56) | (type << 52) | (instance << 32) | account;
@@ -257,12 +247,29 @@ public final class SteamID {
     }
 
     /**
-     * Gets the SteamID32 (STEAM_X:Y:Z) representation of the current SteamID.
+     * Gets the SteamID32 (STEAM_X:Y:Z) representation of the current SteamID. This
+     * method will do the correct thing in most cases.
+     * <ol>
+     * <li>If {@link #of(String)} was called with the SteamID32, this will return
+     * that form (one or zero).
+     * <li>Otherwise it will return the calculated universe which should always be
+     * one.
+     * </ol>
+     * 
+     * @return The SteamID32
+     */
+    public String getSteamID32() {
+        return getSteamID32(false);
+    }
+
+    /**
+     * Gets the SteamID32 (STEAM_X:Y:Z) representation of the current SteamID. This
+     * returns the ID32 with a zero universe (STEAM_0) if {@link #of(String)} was
+     * given the ID32, otherwise it returns a one universe (STEAM_1).
      *
      * @param zeroUniverse Whether to put '0' as the universe. Technically, this is
-     *                     invalid, but it is still used by Valve.
+     *                     invalid, but it is still used by Valve in some cases.
      * @return The SteamID32
-     * @since 1.0
      */
     public String getSteamID32(boolean zeroUniverse) {
         return String.format("STEAM_%d:%d:%d", wasUniverseCorrected || zeroUniverse ? 0 : universe, account & 1,
@@ -274,10 +281,10 @@ public final class SteamID {
      *
      * @param id   The id to check
      * @param text The text which caused the SteamID to be created
-     * @throws SteamIDParserException If there was an error sanity checking the ID
-     *                                (i.e., the created SteamID wasn't valid)
+     * @throws AssertionError If there was an internal error sanity checking the ID
+     *                        (i.e., the created SteamID wasn't valid)
      */
-    private static void sanityCheckID(SteamID id, String text) throws SteamIDParserException {
+    private static void sanityCheckID(SteamID id, String text) {
         String id64 = id.getSteamID64();
         final String ID64_START = "7656119"; // all SteamID64 must start with this
         if (!id64.startsWith(ID64_START)) {
@@ -287,12 +294,12 @@ public final class SteamID {
             } else {
                 substr = id64;
             }
-            throw new SteamIDParserException(
-                    String.format("Incorrect render of SteamID64 (expected %s at start, got %s)", ID64_START, substr),
-                    text);
+            throw new AssertionError(
+                    String.format("Incorrect render of SteamID64 (expected %s at start, got %s) for input %s",
+                            ID64_START, substr, text));
         }
         if (id.idType != SteamIDType.STEAMID_32 && id.universe == 0) {
-            throw new SteamIDParserException("Universe '0' in a non-SteamID32", text);
+            throw new AssertionError(String.format("Universe '0' in a non-SteamID32 for input %s", text));
         }
         // TODO Add more checks, although this might be all we need/is possible
     }
@@ -302,7 +309,6 @@ public final class SteamID {
      * only individual accounts (starting with U) are supported.
      *
      * @return The Steam3ID.
-     * @since 1.0
      */
     public String getSteam3ID() {
         return String.format("[U:%d:%d]", universe, account);
