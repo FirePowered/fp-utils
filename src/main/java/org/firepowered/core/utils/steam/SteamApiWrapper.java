@@ -1,4 +1,4 @@
-package org.firepowered.core.utils.net;
+package org.firepowered.core.utils.steam;
 
 import java.io.IOException;
 import java.net.URI;
@@ -6,9 +6,9 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.firepowered.core.utils.StringUtils;
-import org.firepowered.core.utils.steam.SteamID;
-import org.firepowered.core.utils.steam.SteamIDParserException;
+import org.firepowered.core.utils.net.GenericHttpGet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -50,7 +50,6 @@ public final class SteamApiWrapper {
      *         retrieved from the API
      * @throws IOException          If an error occurred while sending the request
      * @throws InterruptedException If the request is interrupted
-     * @since 1.0
      */
     public static String getPersonaName(String api, SteamID steamid) throws IOException, InterruptedException {
         assert !StringUtils.isEmpty(api) : "API key must not be empty";
@@ -63,12 +62,11 @@ public final class SteamApiWrapper {
                 return players.getJSONObject(0).getString("personaname");
             }
         } catch (URISyntaxException e) {
-            // Won't happen because we know the URI is valid. Just return null anyways.
-            // $FALL-THROUGH$
-        } catch (NullPointerException npe) {
+            // Won't happen because we know the URI is valid
+            throw new AssertionError(e);
+        } catch (NullPointerException | JSONException e) {
             // If any of those chains were null, then the request failed so return null to
             // let the caller know
-            // $FALL-THROUGH$
         }
         return null;
     }
@@ -88,7 +86,6 @@ public final class SteamApiWrapper {
      * @throws InterruptedException   If the request is interrupted
      * @throws SteamIDParserException If the vanityUrl doesn't resolve to a SteamID
      *                                (or the resolved SteamID is invalid)
-     * @since 1.0
      */
     public static SteamID resolveVanityUrl(String api, String id)
             throws IOException, InterruptedException, SteamIDParserException {
@@ -106,12 +103,11 @@ public final class SteamApiWrapper {
             // Message is an optional field that only appears if the ID didn't resolve
             throw new SteamIDParserException(responseBody.getString("message"), id);
         } catch (URISyntaxException e) {
-            // Won't happen because we know the URI is valid. Just return null anyways.
-            // $FALL-THROUGH$
-        } catch (NullPointerException npe) {
+            // Won't happen because we know the URI is valid
+            throw new AssertionError(e);
+        } catch (NullPointerException | JSONException e) {
             // If any of those chains were null, then the request failed so return null to
             // let the caller know
-            // $FALL-THROUGH$
         }
         return null;
     }

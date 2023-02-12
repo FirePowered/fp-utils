@@ -34,7 +34,6 @@ public final class GenericHttpGet {
      * @throws IOException          IF there is an Exception while sending the
      *                              request
      * @throws InterruptedException If the request is interrupted
-     * @since 1.0
      */
     public static String getString(URI uri) throws URISyntaxException, IOException, InterruptedException {
         return getString(uri, Collections.emptyMap());
@@ -51,7 +50,6 @@ public final class GenericHttpGet {
      * @throws IOException          IF there is an Exception while sending the
      *                              request
      * @throws InterruptedException If the request is interrupted
-     * @since 1.0
      */
     public static String getString(URI uri, Map<String, String> parameters)
             throws URISyntaxException, IOException, InterruptedException {
