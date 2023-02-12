@@ -17,7 +17,8 @@ import org.junit.jupiter.api.Test;
  */
 public class SteamApiWrapperTest {
 
-    private static String steamApi;
+    /* Set to some nonempty default so test doesn't fail for wrong exception */
+    private static String steamApi = "default_api";
 
     @BeforeAll
     public static void readApi() {

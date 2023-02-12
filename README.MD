@@ -4,11 +4,11 @@ This project contains a set of utility classes shared among [FirePowered](https:
 
 ## Contents
 
-| Utility       | Package                            | Notes                                                 |
-| ------------- | ---------------------------------- | ----------------------------------------------------- |
-| Steam         | `org.firepowered.core.utils.steam` | Steam API wrapper in `org.firepowered.core.utils.net` |
-| Http/Web      | `org.firepowered.core.utils.net`   |                                                       |
-| Miscellaneous | `org.firepowered.core.utils`       |                                                       |
+| Utility       | Package                            | Notes |
+| ------------- | ---------------------------------- | - |
+| Steam         | `org.firepowered.core.utils.steam` | |
+| Http/Web      | `org.firepowered.core.utils.net`   | |
+| Miscellaneous | `org.firepowered.core.utils`       | |
 
 ## Management
 ### Build
@@ -22,3 +22,16 @@ The main development branch is `master`. All branches should be kept at developm
 Project branches should go under `projects/`. For example, if there is a project called `rewrite`, the branch would be called `projects/rewrite`. These branches are typically large features which is why they deserve their own branch. Most normal development can occur on the branch corresponding to the release version.
 
 Bug fixes should be done on the branch corresponding to the lowest version still in development so that branch and all future version branches get the fix as well.
+
+## Running Tests
+```
+$ mvn test
+```
+
+This command will run Maven Surefire on all tests in `src/test/java`. Note that `SteamApiWrapperTest` (and some tests in `SteamIDTest`) require a Steam API key to be configured. This can be added in `src/test/resources/steamapi.properties` as
+
+```properties
+key=MY_API_KEY
+```
+
+Without that these tests will fail.

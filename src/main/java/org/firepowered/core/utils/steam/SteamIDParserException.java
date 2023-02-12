@@ -8,7 +8,7 @@ package org.firepowered.core.utils.steam;
  * @author Kyle Smith
  * @since 1.0
  */
-final class SteamIDParserException extends Exception {
+public final class SteamIDParserException extends Exception {
 
     private static final long serialVersionUID = -4079398366098895944L;
 
