@@ -22,7 +22,7 @@
    
     <groupId>org.firepowered.core</groupId>
     <artifactId>fp-utils</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>FirePowered Utility Library</name>
     <description>FirePowered shared utilities</description>
     <url>https://github.com/FirePowered/fp-utils</url>
@@ -44,8 +44,8 @@
 
     <licenses>
         <license>
-            <name>The GNU Lesser General Public License, Version 3.0</name>
-            <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <name>The GNU General Public License, Version 3.0</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

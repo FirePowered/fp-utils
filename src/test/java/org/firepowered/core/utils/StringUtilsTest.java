@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Testing {@link StringUtils}.
  * 
- * @author Kyle Smith (smith.kyle1734@gmail.com)
+ * @author Kyle Smith (kyle.smith@firepowered.org)
  * @since 1.0
  */
 @SuppressWarnings("javadoc")

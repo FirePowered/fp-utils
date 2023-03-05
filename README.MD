@@ -2,6 +2,19 @@
 
 This project contains a set of utility classes shared among [FirePowered](https://FirePowered.org) Java code, such as the Discord bots.
 
+## Usage
+Add the following to your project's `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.firepowered.core</groupId>
+    <artifactId>fp-utils</artifactId>
+    <version>${fp.version}</version>
+</dependency>
+```
+
+With `${fp.version}` corresponding to the version of the library.
+
 ## Contents
 
 | Utility       | Package                            | Notes |

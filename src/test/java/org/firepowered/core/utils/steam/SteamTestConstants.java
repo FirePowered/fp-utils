@@ -21,7 +21,7 @@ import org.firepowered.core.utils.StringUtils;
 /**
  * Constants for SteamID and related tests.
  * 
- * @author Kyle Smith (smith.kyle1734@gmail.com)
+ * @author Kyle Smith (kyle.smith@firepowered.org)
  * @since 1.1
  */
 interface SteamTestConstants {
