@@ -16,6 +16,14 @@
         <maven.surefire.version>3.0.0-M9</maven.surefire.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub FirePowered Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/FirePowered/fp-utils</url>
+        </repository>
+    </distributionManagement>
+
     <profiles>
         <profile>
             <!-- Skip SteamApiWrapper test for CI because there will be no API
