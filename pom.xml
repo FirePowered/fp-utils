@@ -2,10 +2,30 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+   
+   <!--
+   Copyright (C) 2023 FirePowered LLC.
+ 
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+ 
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   -->
+   
     <groupId>org.firepowered.core</groupId>
     <artifactId>fp-utils</artifactId>
     <version>1.1.0-SNAPSHOT</version>
     <name>FirePowered Utility Library</name>
+    <description>FirePowered shared utilities</description>
+    <url>https://github.com/FirePowered/fp-utils</url>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -16,18 +36,43 @@
         <maven.surefire.version>3.0.0-M9</maven.surefire.version>
     </properties>
 
+    <scm>
+        <connection>scm:git:git://github.com/FirePowered/fp-utils.git</connection>
+        <developerConnection>scm:git:ssh://github.com:FirePowered/fp-utils.git</developerConnection>
+        <url>http://github.com/FirePowered/fp-utils/tree/master</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The GNU Lesser General Public License, Version 3.0</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>github</id>
-            <name>GitHub FirePowered Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/FirePowered/fp-utils</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
+    <developers>
+        <developer>
+            <name>Kyle Smith</name>
+            <email>kyle.smith@firepowered.org</email>
+            <organization>FirePowered LLC.</organization>
+            <organizationUrl>https://FirePowered.org</organizationUrl>
+        </developer>
+    </developers>
+
     <profiles>
         <profile>
-            <!-- Skip SteamApiWrapper test for CI because there will be no API
-            key -->
+            <!-- Skip SteamApiWrapper test for CI because there will be no API key -->
             <id>CI</id>
             <build>
                 <plugins>
@@ -72,6 +117,58 @@
                                     <version>3.6</version>
                                 </requireMavenVersion>
                             </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <keyname>0x5CA090F3</keyname>
                         </configuration>
                     </execution>
                 </executions>
