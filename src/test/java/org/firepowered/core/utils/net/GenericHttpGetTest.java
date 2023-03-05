@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class GenericHttpGetTest {
 
     @Test

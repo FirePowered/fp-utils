@@ -29,7 +29,3 @@ hs_err_pid*
 .project
 .classpath
 .settings/
-
-# Misc
-src/main/resources/
-src/test/resources/
