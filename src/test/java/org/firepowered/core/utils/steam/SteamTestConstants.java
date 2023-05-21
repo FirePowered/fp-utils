@@ -20,7 +20,7 @@ import org.firepowered.core.utils.StringUtils;
 
 /**
  * Constants for SteamID and related tests.
- * 
+ *
  * @author Kyle Smith (kyle.smith@firepowered.org)
  * @since 1.1
  */

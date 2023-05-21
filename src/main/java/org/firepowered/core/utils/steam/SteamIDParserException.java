@@ -20,7 +20,7 @@ package org.firepowered.core.utils.steam;
  * An Exception class representing that there was an error parsing a
  * {@link SteamID}. The original text can be accessed using the
  * {@link #getSteamIDText()} method.
- * 
+ *
  * @author Kyle Smith
  * @since 1.0
  */
@@ -33,7 +33,7 @@ public final class SteamIDParserException extends Exception {
     /**
      * Creates a new exception with the given message and the text that tried to be
      * a SteamID.
-     * 
+     *
      * @param message Exception message, passed to the constructor of
      *                {@link Exception}
      * @param text    The SteamID text that caused the exception, must not be

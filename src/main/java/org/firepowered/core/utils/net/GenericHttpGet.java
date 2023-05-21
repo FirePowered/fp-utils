@@ -16,21 +16,20 @@
  */
 package org.firepowered.core.utils.net;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
-
-import org.apache.hc.core5.net.URIBuilder;
 
 /**
  * Utility for generic GET requests. This class can either be used by itself or
  * to help implement another utility.
- * 
+ *
  * @author Kyle Smith
  * @since 1.0
  */
@@ -40,41 +39,95 @@ public final class GenericHttpGet {
     }
 
     /**
-     * Performs a GET request on the given {@code uri} and returns the body as a
-     * string. To use query parameters, call {@link #getString(URI, Map)} with a
-     * {@link Map} of key/values instead.
-     * 
-     * @param uri The URI
+     * Performs a GET request on the given {@code url} and returns the body as a
+     * string.
+     *
+     * @param url The URL
      * @return The response body
-     * @throws URISyntaxException   If the URI is invalid
-     * @throws IOException          IF there is an Exception while sending the
-     *                              request
-     * @throws InterruptedException If the request is interrupted
+     * @throws IOException If there is an Exception while sending the request
      */
-    public static String getString(URI uri) throws URISyntaxException, IOException, InterruptedException {
-        return getString(uri, Collections.emptyMap());
+    public static String getString(URL url) throws IOException {
+        return getString(url, Collections.emptyMap());
     }
 
     /**
-     * Performs a GET request on the given {@code uri} with the given query
+     * Performs a GET request on the given {@code url} and returns the body as a
+     * string.
+     *
+     * @param url The URL
+     * @return The response body
+     * @throws MalformedURLException If the given url is not valid
+     * @throws IOException If there is an Exception while sending the request
+     */
+    public static String getString(String url) throws MalformedURLException, IOException {
+        return getString(new URL(url));
+    }
+
+    /**
+     * Performs a GET request on the given {@code url} with the given query
      * parameters and returns the body as a string.
-     * 
-     * @param uri        The URI
+     *
+     * @param url        The URL
      * @param parameters Query parameters as key-value pairs
      * @return The response body
-     * @throws URISyntaxException   If the URI is invalid
-     * @throws IOException          IF there is an Exception while sending the
-     *                              request
-     * @throws InterruptedException If the request is interrupted
+     * @throws MalformedURLException If the given url is not valid
+     * @throws IOException           If there is an Exception while sending the
+     *                               request
      */
-    public static String getString(URI uri, Map<String, String> parameters)
-            throws URISyntaxException, IOException, InterruptedException {
-        URIBuilder builder = new URIBuilder(uri);
-        parameters.forEach((k, v) -> builder.addParameter(k, v));
-        HttpRequest req = HttpRequest.newBuilder(builder.build()).build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
-        return res.body();
+    public static String getString(String url, Map<String, String> parameters) throws MalformedURLException, IOException {
+        return getString(new URL(url), parameters);
+    }
+
+    /**
+     * Performs a GET request on the given {@code url} with the given query
+     * parameters and returns the body as a string.
+     *
+     * @param url        The URL
+     * @param parameters Query parameters as key-value pairs
+     * @return The response body
+     * @throws IOException If there is an Exception while sending the request
+     */
+    public static String getString(URL url, Map<String, String> parameters) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        if (!parameters.isEmpty()) {
+            conn.setDoOutput(true);
+            try (DataOutputStream dos = new DataOutputStream(conn.getOutputStream())) {
+                dos.writeBytes(createParamString(parameters));
+            }
+        }
+
+        StringBuilder res = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                res.append(line);
+            }
+        } finally {
+            conn.disconnect();
+        }
+        return res.toString();
+
+    }
+
+    /**
+     * Creates a querystring ({@code key1=value1&key2=value2}, etc.) with the given
+     * parameter map.
+     *
+     * @param params The parameter map
+     * @return The querystring
+     */
+    public static String createParamString(Map<String, String> params) {
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, String> param : params.entrySet()) {
+            result.append(param.getKey()).append('=').append(param.getValue()).append('&');
+        }
+        String res = result.toString();
+        if (!res.isEmpty()) {
+            res = res.substring(0, res.length() - 1);
+        }
+        return res;
     }
 
 }

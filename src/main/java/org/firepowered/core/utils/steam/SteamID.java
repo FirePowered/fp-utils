@@ -17,6 +17,7 @@
 package org.firepowered.core.utils.steam;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,15 +94,13 @@ public final class SteamID {
     private long instance;
 
     /**
-     * The type of account. Whether it is an individual, clan, gameserver, etc. See
-     * {@link AccountType}.
+     * The type of account. Whether it is an individual, clan, gameserver, etc.
      */
     private long type;
 
     /**
-     * Some SteamID32s have a 0 as the universe (STEAM_0). This is not valid per the
-     * SteamID specification so internally they are stored as 1. But tracking this
-     * so we can print it the same way it was given.
+     * Some SteamID32s have a 0 as the universe (STEAM_0). We store them interally
+     * as 1, but this flag allows callers to know if it was originally 0.
      */
     private boolean wasUniverseCorrected = false;
 
@@ -125,8 +124,8 @@ public final class SteamID {
 
     /**
      * Given an arbitrary string, try to convert it to a {@link SteamID} instance.
-     * This method will not attempt to resolve a vanity url, returning {@code null}
-     * if such a string is given.
+     * This method will also attempt to resolve a vanity url if the type can't be
+     * determined otherwise.
      *
      * @param str The string representing the SteamID, must not be {@code null}
      * @return A SteamID object, or {@code null} if one could not be determined.
@@ -134,12 +133,35 @@ public final class SteamID {
      *                                could not be determined
      */
     public static SteamID of(final String str) throws SteamIDParserException {
+        assert !StringUtils.isEmpty(str);
+        String idStr = str.strip();
         try {
-            return of(str, null);
+            SteamID ret = null;
+            if (idStr.matches("^\\d+$")) {
+                // SteamID64
+                ret = of64(idStr);
+            } else if (idStr.matches(PATTERNSTR_ID32)) {
+                // SteamID32
+                ret = of32(idStr);
+            } else if (idStr.matches(PATTERNSTR_3ID)) {
+                // Steam3ID
+                ret = ofSteam3(idStr);
+            } else if (idStr.matches(PATTERNSTR_PROFILES_URL)) {
+                // Normal profile url (/profiles/765..)
+                ret = ofProfiles(idStr);
+            } else {
+                ret = ofCustom(idStr);
+            }
+
+            if (ret == null) {
+                throw new SteamIDParserException("SteamIDType was not able to be determined.", idStr);
+            }
+
+            // Check if it's valid
+            sanityCheckID(ret, str);
+            return ret;
         } catch (IOException | InterruptedException e) {
-            // These exceptions are only thrown by performing an HTTP request to resolve a
-            // custom URL, which this method doesn't call.
-            throw new AssertionError();
+            throw new SteamIDParserException("Unable to resolve vanity URL as a last resort", idStr);
         }
     }
 
@@ -147,10 +169,10 @@ public final class SteamID {
      * Given an arbitrary string, try to convert it to a {@link SteamID} instance.
      * This method will also attempt to resolve a vanity url if the type can't be
      * determined otherwise.
-     * 
+     *
      * @param str The string representing the SteamID, must not be {@code null} or
      *            empty
-     * @param api API key for custom url resolution
+     * @param api API key
      * @return A SteamID object, or {@code null} if one could not be determined.
      * @throws SteamIDParserException If the SteamID type was unable to be
      *                                determined or the calculated SteamID was
@@ -158,39 +180,12 @@ public final class SteamID {
      * @throws IOException            If an error occurred while resolving the
      *                                custom url
      * @throws InterruptedException   If the http request is interrupted
+     * @deprecated Use {@link #of(String)} instead, the API parameter is not used
      */
+    @Deprecated(since = "1.2", forRemoval = true)
     public static SteamID of(final String str, final String api)
             throws SteamIDParserException, IOException, InterruptedException {
-        assert !StringUtils.isEmpty(str) : "str cannot be null or empty";
-
-        String idStr = str.strip();
-        SteamID ret = null;
-        if (idStr.matches("^\\d+$")) {
-            // SteamID64
-            ret = of64(idStr);
-        } else if (idStr.matches(PATTERNSTR_ID32)) {
-            // SteamID32
-            ret = of32(idStr);
-        } else if (idStr.matches(PATTERNSTR_3ID)) {
-            // Steam3ID
-            ret = ofSteam3(idStr);
-        } else if (idStr.matches(PATTERNSTR_PROFILES_URL)) {
-            // Normal profile url (/profiles/765..)
-            ret = ofProfiles(idStr);
-        } else {
-            if (!StringUtils.isEmpty(api)) {
-                // Try a custom id
-                ret = ofCustom(idStr, api);
-            }
-        }
-
-        if (ret == null) {
-            throw new SteamIDParserException("SteamIDType was not able to be determined.", str);
-        }
-
-        // Check if it's valid
-        sanityCheckID(ret, str);
-        return ret;
+        return of(str);
     }
 
     private static SteamID ofProfiles(final String str) {
@@ -199,15 +194,14 @@ public final class SteamID {
         return of64(matcher.group(1));
     }
 
-    private static SteamID ofCustom(final String str, final String api)
-            throws SteamIDParserException, IOException, InterruptedException {
+    private static SteamID ofCustom(final String str) throws SteamIDParserException, IOException, InterruptedException {
         Matcher matcher = PATTERN_URL.matcher(str);
         String query = str;
         if (matcher.find()) {
             // It is a URL, we need to extract the ID from the end
             query = matcher.group(1);
         }
-        return SteamApiWrapper.resolveVanityUrl(api, query);
+        return SteamApiWrapper.resolveVanityUrl(query);
     }
 
     private static SteamID of64(final String str) throws NumberFormatException {
@@ -271,7 +265,7 @@ public final class SteamID {
      * <li>Otherwise it will return the calculated universe which should always be
      * one.
      * </ol>
-     * 
+     *
      * @return The SteamID32
      */
     public String getSteamID32() {
@@ -282,9 +276,11 @@ public final class SteamID {
      * Gets the SteamID32 (STEAM_X:Y:Z) representation of the current SteamID. This
      * returns the ID32 with a zero universe (STEAM_0) if {@link #of(String)} was
      * given the ID32, otherwise it returns a one universe (STEAM_1).
+     * <p>
+     * Most callers may want to use {@link #getSteamID32()} as it takes into account
+     * the string that it was created with.
      *
-     * @param zeroUniverse Whether to put '0' as the universe. Technically, this is
-     *                     invalid, but it is still used by Valve in some cases.
+     * @param zeroUniverse Whether to put '0' as the universe (STEAM_0)
      * @return The SteamID32
      */
     public String getSteamID32(boolean zeroUniverse) {
@@ -330,17 +326,25 @@ public final class SteamID {
         return String.format("[U:%d:%d]", universe, account);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SteamID) {
-            SteamID other = (SteamID) obj;
-            return other.account == account && other.instance == instance && other.type == type
-                    && other.universe == universe;
-        }
-        return false;
-    }
-
     private enum SteamIDType {
         STEAMID_64, STEAMID_32, STEAM3_ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(account, instance, type, universe);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof SteamID)) {
+            return false;
+        }
+        SteamID other = (SteamID) obj;
+        return account == other.account && instance == other.instance && type == other.type
+                && universe == other.universe;
     }
 }

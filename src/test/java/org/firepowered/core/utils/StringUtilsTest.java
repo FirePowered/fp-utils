@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testing {@link StringUtils}.
- * 
+ *
  * @author Kyle Smith (kyle.smith@firepowered.org)
  * @since 1.0
  */

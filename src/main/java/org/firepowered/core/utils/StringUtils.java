@@ -21,7 +21,7 @@ import java.util.Random;
 /**
  * Common {@link String} utility methods. All methods can handle {@code null}s
  * safely, further details in their javadocs.
- * 
+ *
  * @author Kyle Smith
  * @since 1.0
  */
@@ -31,6 +31,7 @@ public final class StringUtils {
     private static final String ALPHA_LOWER = ALPHA_UPPER.toLowerCase();
     private static final String NUMBERS = "0123456789";
     private static final String SPECIALS = "!@#$%^&*_-";
+    private static final Random RNG = new Random();
 
     private static final String ALPHANUMERIC = ALPHA_UPPER + ALPHA_LOWER + NUMBERS;
 
@@ -57,7 +58,7 @@ public final class StringUtils {
     /**
      * Returns whether a string is {@code null} or empty (either an empty string or
      * a string with only whitespace.
-     * 
+     *
      * @param str The string, may be {@code null} as {@code null} strings are
      *            considered empty
      * @return True if the string is empty, false otherwise
@@ -73,9 +74,8 @@ public final class StringUtils {
             throw new RuntimeException("Empty charset");
         }
         char[] res = new char[length];
-        Random rng = new Random();
         for (int i = 0; i < length; i++) {
-            int idx = rng.nextInt(chars.length());
+            int idx = RNG.nextInt(chars.length());
             res[i] = chars.charAt(idx);
         }
         return new String(res);
@@ -84,7 +84,7 @@ public final class StringUtils {
     /**
      * Generates a random string of the given length. This version only includes
      * alphanumeric characters ({@code [A-Za-z0-9]}).
-     * 
+     *
      * @param length Length of the string, must be greater than 0
      * @return A random string
      */
@@ -99,7 +99,7 @@ public final class StringUtils {
      * <p>
      * If {@code mode} is less than 0, {@link #randomStringAlphaNum(int)} will be
      * called to generate a random alphanumeric string as the default.
-     * 
+     *
      * @param length Length of the string to generate, must be greater than 0
      * @param mode   Bitstring of {@code RANDOM_*} flags defined in this class
      * @return A random string

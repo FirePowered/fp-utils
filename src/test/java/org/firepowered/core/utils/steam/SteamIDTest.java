@@ -16,6 +16,7 @@
  */
 package org.firepowered.core.utils.steam;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link SteamID}.
- * 
+ *
  * @author Kyle Smith
  * @since 1.0
  */
@@ -45,8 +46,11 @@ public class SteamIDTest {
         SteamID from3 = SteamID.of(SteamTestConstants.ID_3);
         assertNotNull(from3);
 
-        assertTrue(from64.equals(from32));
-        assertTrue(from32.equals(from3));
+        assertEquals(from64, from64);
+        assertEquals(from64, from32);
+        assertEquals(from32, from3);
+
+        assertEquals(from32.hashCode(), from64.hashCode());
 
         Assertions.assertThrows(SteamIDParserException.class, () -> SteamID.of("this is not a steamid!!!"));
     }
@@ -91,5 +95,4 @@ public class SteamIDTest {
                 () -> SteamID.of("this is not a steamid!!!"));
         assertTrue("this is not a steamid!!!".equals(exc.getSteamIDText()));
     }
-
 }

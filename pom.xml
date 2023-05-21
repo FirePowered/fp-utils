@@ -2,27 +2,34 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-   
-   <!--
+
+    <!--
    Copyright (C) 2023 FirePowered LLC.
  
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
+   This program is free
+    software: you can redistribute it and/or modify
+   it under the terms of the
+    GNU General Public License as published by
+   the Free Software Foundation,
+    either version 3 of the License, or
    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+   but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License
+    for more details.
  
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
- 
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General
+    Public License
+   along with this program.  If not, see
+    <https://www.gnu.org/licenses/>.
    -->
-   
+
     <groupId>org.firepowered.core</groupId>
     <artifactId>fp-utils</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0</version>
     <name>FirePowered Utility Library</name>
     <description>FirePowered shared utilities</description>
     <url>https://github.com/FirePowered/fp-utils</url>
@@ -57,7 +64,8 @@
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>
+                https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -72,17 +80,19 @@
 
     <profiles>
         <profile>
-            <!-- Skip SteamApiWrapper test for CI because there will be no API key -->
+            <!-- Add excluded tests here -->
             <id>CI</id>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
+                        <!-- 
                         <configuration>
                             <excludes>
-                                <exclude>**/SteamApiWrapperTest.java</exclude>
-                            </excludes>
+                        <exclude>**/SteamApiWrapperTest.java</exclude>
+                        </excludes>
                         </configuration>
+                        -->
                     </plugin>
                 </plugins>
             </build>
@@ -138,7 +148,7 @@
                 <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <id>generate-javadoc</id>
+                        <id>generate-sources</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -177,11 +187,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.2.1</version>
-        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
