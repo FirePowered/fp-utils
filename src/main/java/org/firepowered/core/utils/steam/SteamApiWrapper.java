@@ -169,8 +169,7 @@ public final class SteamApiWrapper {
     }
 
     /**
-     * Creates a new API wrapper builder. This builder can be resued, as when
-     * created a new instance is returned.
+     * Creates a new API wrapper builder.
      *
      * @return A blank builder
      * @see Builder

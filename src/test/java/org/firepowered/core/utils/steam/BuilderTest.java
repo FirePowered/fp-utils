@@ -21,7 +21,7 @@ public class BuilderTest {
 
     @SuppressWarnings("unlikely-arg-type")
     @Test
-    public void testCloneEquals() throws CloneNotSupportedException {
+    public void testCloneEquals() {
         Builder based = (Builder) base.clone();
         Builder cloned = (Builder) based.clone();
         assertEquals(based, cloned);
@@ -51,7 +51,7 @@ public class BuilderTest {
     }
 
     @Test
-    public void testKey() throws CloneNotSupportedException {
+    public void testKey() {
         String key = "123";
         Builder b = (Builder) base.clone();
         b.key(key);
@@ -69,7 +69,7 @@ public class BuilderTest {
     }
 
     @Test
-    public void testFormat() throws CloneNotSupportedException {
+    public void testFormat() {
         Builder b = (Builder) base.clone();
         assertTrue(b.build().endsWith("?format=json"));
 
@@ -84,7 +84,7 @@ public class BuilderTest {
     }
 
     @Test
-    public void testParams() throws CloneNotSupportedException {
+    public void testParams() {
         String key1 = "key1";
         String key2 = "key2";
         String val1 = "val1";
@@ -135,7 +135,8 @@ public class BuilderTest {
         });
 
         try {
-            String page = b.apiInterface("ISteamNews").method("GetNewsForApp").version("v0002").param("appid", "440").call();
+            String page = b.apiInterface("ISteamNews").method("GetNewsForApp").version("v0002").param("appid", "440")
+                    .call();
             assertTrue(!page.isEmpty());
         } catch (IOException e) {
             assertTrue(false);

@@ -27,8 +27,9 @@ import org.firepowered.core.utils.StringUtils;
  * Representation of a SteamID. Static methods exist for creating an instance
  * from a string and converting one type to another.
  * <p>
- * See https://developer.valvesoftware.com/wiki/SteamID for more details about
- * the format and conversions.
+ * See <a href=
+ * "https://developer.valvesoftware.com/wiki/SteamID">developer.valvesoftware.com</a>
+ * for more details about the format and conversions.
  *
  * @author Kyle Smith
  * @since 1.0

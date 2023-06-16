@@ -244,14 +244,20 @@ public class Builder implements Cloneable {
      * @return The new builder
      */
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        Builder clone = (Builder) super.clone();
-        clone.param(new LinkedHashMap<>(param));
-        return clone;
+    public Object clone() {
+        try {
+            Builder clone = (Builder) super.clone();
+            clone.param(new LinkedHashMap<>(param));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            // will not happen
+        }
+        return null;
     }
 
     /**
-     * Converts this builder into a URL. Interface, method, and version must have been set prior to calling this.
+     * Converts this builder into a URL. Interface, method, and version must have
+     * been set prior to calling this.
      *
      * @return The URL representing the builder
      */
