@@ -29,7 +29,7 @@
 
     <groupId>org.firepowered.core</groupId>
     <artifactId>fp-utils</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <name>FirePowered Utility Library</name>
     <description>FirePowered shared utilities</description>
     <url>https://github.com/FirePowered/fp-utils</url>
