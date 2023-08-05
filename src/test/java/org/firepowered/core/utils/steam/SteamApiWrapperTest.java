@@ -18,11 +18,11 @@ package org.firepowered.core.utils.steam;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -46,12 +46,12 @@ public class SteamApiWrapperTest {
             assertTrue(master.equals(element));
         }
 
-        Assertions.assertThrows(SteamIDParserException.class, () -> SteamID.of(SteamTestConstants.CUSTOM_FAKE_ID));
+        assertThrows(SteamIDParserException.class, () -> SteamID.of(SteamTestConstants.CUSTOM_FAKE_ID));
     }
 
     @Test
     public void testGetPersonaName() throws SteamIDParserException, IOException, InterruptedException {
-        Assertions.assertThrows(AssertionError.class, () -> SteamApiWrapper.getPersonaName(null));
+        assertThrows(AssertionError.class, () -> SteamApiWrapper.getPersonaName(null));
 
         SteamID id = SteamID.of(SteamTestConstants.GABEN_ID);
         String personaName = SteamApiWrapper.getPersonaName(id);
@@ -63,5 +63,6 @@ public class SteamApiWrapperTest {
         assertNull(SteamApiWrapper.resolveVanityUrl(SteamTestConstants.CUSTOM_FAKE_ID));
         assertEquals(SteamID.of(SteamTestConstants.ID_64),
                 SteamApiWrapper.resolveVanityUrl(SteamTestConstants.CUSTOM_ID));
+        assertThrows(AssertionError.class, () -> SteamApiWrapper.resolveVanityUrl(null));
     }
 }

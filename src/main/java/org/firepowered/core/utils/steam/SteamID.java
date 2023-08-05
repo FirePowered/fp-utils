@@ -52,13 +52,13 @@ public final class SteamID {
     /**
      * The pattern to match a custom profile link.
      */
-    private final static String PATTERNSTR_URL = "^https?://steamcommunity\\.com/id/([\\w-]+)$";
+    private final static String PATTERNSTR_URL = "^https?://steamcommunity\\.com/id/(.*?)/?$";
     private final static Pattern PATTERN_URL = Pattern.compile(PATTERNSTR_URL);
 
     /**
      * The pattern to match a profile link.
      */
-    private final static String PATTERNSTR_PROFILES_URL = "^https?://steamcommunity\\.com/profiles/(\\d+)";
+    private final static String PATTERNSTR_PROFILES_URL = "^https?://steamcommunity\\.com/profiles/(\\d+)/?$";
     private final static Pattern PATTERN_PROFILES_URL = Pattern.compile(PATTERNSTR_PROFILES_URL);
 
     /**

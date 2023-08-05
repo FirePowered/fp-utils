@@ -49,10 +49,25 @@ public class SteamIDTest {
         assertEquals(from64, from64);
         assertEquals(from64, from32);
         assertEquals(from32, from3);
-
         assertEquals(from32.hashCode(), from64.hashCode());
 
         Assertions.assertThrows(SteamIDParserException.class, () -> SteamID.of("this is not a steamid!!!"));
+    }
+    
+    @Test
+    public void testUrls() throws SteamIDParserException {
+        SteamID fromVanity = SteamID.of(SteamTestConstants.CUSTOM_URL);
+        assertNotNull(fromVanity);
+
+        SteamID fromProfiles = SteamID.of(SteamTestConstants.PROFILES_URL);
+        assertNotNull(fromProfiles);
+        
+        // Test trailing slashes
+        fromVanity = SteamID.of(SteamTestConstants.CUSTOM_URL + "/");
+        assertNotNull(fromVanity);
+        
+        fromProfiles = SteamID.of(SteamTestConstants.PROFILES_URL + "/");
+        assertNotNull(fromProfiles);
     }
 
     @Test
