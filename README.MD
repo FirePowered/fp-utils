@@ -1,5 +1,7 @@
 # FirePowered Core Utilities
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.firepowered.core/fp-utils/badge.svg?style=for-the-badge)](https://maven-badges.herokuapp.com/maven-central/org.firepowered.core/fp-utils)
+
 This project contains a set of utility classes shared among [FirePowered](https://FirePowered.org) Java code, such as the Discord bots.
 
 ## Usage
